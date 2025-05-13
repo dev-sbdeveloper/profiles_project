@@ -34,3 +34,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             instance.set_password(password)
 
         return super().update(instance, validated_data)
+
+
+class PostFeedSerializer(serializers.ModelSerializer):
+    """Serializes the post feed"""
+
+    class Meta:
+        model = models.PostFeed
+        fields = ("id", "author", "title", "content", "date_created")
+        extra_kwargs = {"author": {"read_only": True}}

@@ -6,6 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import filters
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticated
 
 from profiles_app import serializers
 from profiles_app import models
@@ -112,3 +113,19 @@ class UserLoginApiView(ObtainAuthToken):
     """Handles creating user authentication tokens"""
 
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class PostFeedViewSet(viewsets.ModelViewSet):
+    """Handles creating and updating post feeds"""
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (
+        permissions.UpdateOwnPostFeed,
+        IsAuthenticated,
+    )
+    serializer_class = serializers.PostFeedSerializer
+    queryset = models.PostFeed.objects.all()
+
+    def perform_create(self, serializer):
+        """Sets the author of the post feed to the logged in user"""
+        serializer.save(author=self.request.user)
